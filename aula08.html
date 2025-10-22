@@ -4,33 +4,67 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Sistema de Gerenciamento</title>
-  <!-- Bootstrap 4.1 CSS -->
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Font Awesome para ícones -->
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Chart.js para gráficos -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
+    :root {
+      --primary-color: #4361ee;
+      --secondary-color: #3f37c9;
+      --success-color: #4cc9f0;
+      --warning-color: #f72585;
+      --info-color: #4895ef;
+      --light-color: #f8f9fa;
+      --dark-color: #212529;
+      --sidebar-width: 250px;
+      --transition-speed: 0.3s;
+    }
+
+    [data-theme="dark"] {
+      --bg-color: #121212;
+      --card-bg: #1e1e1e;
+      --text-color: #e0e0e0;
+      --sidebar-bg: #1a1a1a;
+      --header-bg: #0d0d0d;
+    }
+
+    [data-theme="light"] {
+      --bg-color: #f8f9fa;
+      --card-bg: #ffffff;
+      --text-color: #333333;
+      --sidebar-bg: #343a40;
+      --header-bg: #212529;
+    }
+
     body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
       padding-top: 56px;
-      background-color: #f8f9fa;
+      transition: background-color var(--transition-speed), color var(--transition-speed);
     }
 
     /* Sidebar */
     #sidebar {
-      min-width: 250px;
-      max-width: 250px;
-      background: #343a40;
+      min-width: var(--sidebar-width);
+      max-width: var(--sidebar-width);
+      background: var(--sidebar-bg);
       color: #fff;
-      transition: all 0.3s;
+      transition: all var(--transition-speed);
       position: fixed;
       height: calc(100vh - 56px);
       top: 56px;
       left: 0;
       overflow-y: auto;
+      z-index: 1000;
+      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
     }
 
     #sidebar .sidebar-header {
       padding: 20px;
-      background: #212529;
+      background: var(--header-bg);
     }
 
     #sidebar ul.components {
@@ -39,31 +73,45 @@
 
     #sidebar ul li a {
       padding: 12px 20px;
-      font-size: 1.1em;
+      font-size: 1em;
       display: block;
       color: #adb5bd;
       text-decoration: none;
-      transition: background 0.3s;
+      transition: all 0.2s;
+      border-left: 3px solid transparent;
     }
 
     #sidebar ul li a:hover {
-      background: #495057;
+      background: rgba(255, 255, 255, 0.1);
       color: #fff;
+      border-left: 3px solid var(--primary-color);
     }
 
     #sidebar ul li.active > a {
-      background: #007bff;
+      background: rgba(67, 97, 238, 0.2);
       color: #fff;
+      border-left: 3px solid var(--primary-color);
+    }
+
+    #sidebar ul li a i {
+      margin-right: 10px;
+      width: 20px;
+      text-align: center;
     }
 
     /* Conteúdo principal */
     #content {
-      margin-left: 250px;
+      margin-left: var(--sidebar-width);
       padding: 20px;
-      transition: margin-left 0.3s;
+      transition: margin-left var(--transition-speed);
+      min-height: calc(100vh - 56px);
     }
 
     /* Navbar */
+    .navbar {
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
     .navbar-brand span {
       font-weight: bold;
     }
@@ -73,12 +121,68 @@
       background: none;
       border: none;
       color: #fff;
+      font-size: 1.2rem;
+    }
+
+    /* Cards */
+    .card {
+      border: none;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s, box-shadow 0.3s;
+      background-color: var(--card-bg);
+      color: var(--text-color);
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-body {
+      padding: 1.5rem;
+    }
+
+    /* Badge de notificação */
+    .notification-badge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      padding: 3px 7px;
+      border-radius: 50%;
+      background: var(--warning-color);
+      color: white;
+      font-size: 0.7rem;
+    }
+
+    /* Gráficos */
+    .chart-container {
+      position: relative;
+      height: 300px;
+      margin-bottom: 20px;
+    }
+
+    /* Tabelas */
+    .table-container {
+      background-color: var(--card-bg);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Tema escuro/claro */
+    .theme-toggle {
+      background: none;
+      border: none;
+      color: var(--text-color);
+      font-size: 1.2rem;
+      cursor: pointer;
     }
 
     /* Responsivo */
     @media (max-width: 768px) {
       #sidebar {
-        margin-left: -250px;
+        margin-left: calc(-1 * var(--sidebar-width));
       }
       #sidebar.active {
         margin-left: 0;
@@ -87,12 +191,32 @@
         margin-left: 0;
       }
       #content.active {
-        margin-left: 250px;
+        margin-left: var(--sidebar-width);
       }
+      .card .display-4 {
+        font-size: 2rem;
+      }
+    }
+
+    /* Animações */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .fade-in {
+      animation: fadeIn 0.5s ease-in;
+    }
+
+    /* Progress bars */
+    .progress {
+      height: 8px;
+      border-radius: 4px;
+      margin-top: 5px;
     }
   </style>
 </head>
-<body>
+<body data-theme="light">
 
   <!-- Navbar Superior -->
   <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
@@ -101,18 +225,68 @@
         <i class="fas fa-bars"></i>
       </button>
       <a class="navbar-brand" href="#"><span>Sistema Admin</span></a>
-      <ul class="navbar-nav ml-auto">
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown">
-            <i class="fas fa-user"></i> Usuário
+      
+      <div class="d-flex align-items-center">
+        <!-- Tema escuro/claro -->
+        <button class="theme-toggle me-3" id="themeToggle">
+          <i class="fas fa-moon"></i>
+        </button>
+        
+        <!-- Notificações -->
+        <div class="dropdown me-3 position-relative">
+          <a class="nav-link text-white" href="#" role="button" id="notificationDropdown" data-bs-toggle="dropdown">
+            <i class="fas fa-bell"></i>
+            <span class="notification-badge">3</span>
           </a>
-          <div class="dropdown-menu dropdown-menu-right">
-            <a class="dropdown-item" href="#"><i class="fas fa-cog"></i> Configurações</a>
+          <div class="dropdown-menu dropdown-menu-end p-3" style="width: 300px;">
+            <h6 class="dropdown-header">Notificações</h6>
+            <div class="dropdown-item d-flex align-items-start p-2">
+              <div class="me-3">
+                <i class="fas fa-user-plus text-primary"></i>
+              </div>
+              <div>
+                <p class="mb-0 small">Novo cliente cadastrado</p>
+                <small class="text-muted">Há 5 minutos</small>
+              </div>
+            </div>
+            <div class="dropdown-item d-flex align-items-start p-2">
+              <div class="me-3">
+                <i class="fas fa-shopping-cart text-success"></i>
+              </div>
+              <div>
+                <p class="mb-0 small">Novo pedido recebido</p>
+                <small class="text-muted">Há 1 hora</small>
+              </div>
+            </div>
+            <div class="dropdown-item d-flex align-items-start p-2">
+              <div class="me-3">
+                <i class="fas fa-exclamation-triangle text-warning"></i>
+              </div>
+              <div>
+                <p class="mb-0 small">Estoque baixo do produto X</p>
+                <small class="text-muted">Há 2 horas</small>
+              </div>
+            </div>
             <div class="dropdown-divider"></div>
-            <a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt"></i> Sair</a>
+            <a class="dropdown-item text-center small" href="#">Ver todas as notificações</a>
           </div>
-        </li>
-      </ul>
+        </div>
+        
+        <!-- Perfil do usuário -->
+        <ul class="navbar-nav">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+              <i class="fas fa-user-circle me-1"></i> Usuário Admin
+            </a>
+            <div class="dropdown-menu dropdown-menu-end">
+              <a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i> Meu Perfil</a>
+              <a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i> Configurações</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt me-2"></i> Sair</a>
+            </div>
+          </li>
+        </ul>
+      </div>
     </div>
   </nav>
 
@@ -123,19 +297,25 @@
     </div>
     <ul class="list-unstyled components">
       <li class="active">
-        <a href="#"><i class="fas fa-home mr-2"></i> Dashboard</a>
+        <a href="#"><i class="fas fa-home"></i> Dashboard</a>
       </li>
       <li>
-        <a href="#"><i class="fas fa-users mr-2"></i> Clientes</a>
+        <a href="#"><i class="fas fa-users"></i> Clientes</a>
       </li>
       <li>
-        <a href="#"><i class="fas fa-box mr-2"></i> Produtos</a>
+        <a href="#"><i class="fas fa-box"></i> Produtos</a>
       </li>
       <li>
-        <a href="#"><i class="fas fa-chart-line mr-2"></i> Relatórios</a>
+        <a href="#"><i class="fas fa-shopping-cart"></i> Pedidos</a>
       </li>
       <li>
-        <a href="#"><i class="fas fa-cog mr-2"></i> Configurações</a>
+        <a href="#"><i class="fas fa-chart-line"></i> Relatórios</a>
+      </li>
+      <li>
+        <a href="#"><i class="fas fa-cog"></i> Configurações</a>
+      </li>
+      <li class="mt-4">
+        <a href="#"><i class="fas fa-question-circle"></i> Ajuda</a>
       </li>
     </ul>
   </nav>
@@ -143,30 +323,186 @@
   <!-- Conteúdo Principal -->
   <div id="content">
     <div class="container-fluid">
-      <h2>Dashboard</h2>
-      <p class="lead">Bem-vindo ao sistema de gerenciamento. Use o menu lateral para navegar.</p>
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Dashboard</h2>
+        <div class="d-flex">
+          <div class="input-group me-2" style="width: 250px;">
+            <input type="text" class="form-control" placeholder="Pesquisar...">
+            <button class="btn btn-outline-primary" type="button">
+              <i class="fas fa-search"></i>
+            </button>
+          </div>
+          <button class="btn btn-primary">
+            <i class="fas fa-plus me-1"></i> Novo
+          </button>
+        </div>
+      </div>
+      
+      <p class="lead mb-4">Bem-vindo ao sistema de gerenciamento. Aqui está um resumo das suas atividades.</p>
+      
+      <!-- Cards de Métricas -->
+      <div class="row mb-5">
+        <div class="col-md-3">
+          <div class="card text-white bg-primary">
+            <div class="card-body">
+              <div class="d-flex justify-content-between">
+                <div>
+                  <h5 class="card-title">Clientes Ativos</h5>
+                  <p class="card-text display-4">128</p>
+                </div>
+                <div class="align-self-center">
+                  <i class="fas fa-users fa-2x opacity-50"></i>
+                </div>
+              </div>
+              <div class="mt-2">
+                <small><i class="fas fa-arrow-up me-1"></i> 5% desde o último mês</small>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card text-white bg-success">
+            <div class="card-body">
+              <div class="d-flex justify-content-between">
+                <div>
+                  <h5 class="card-title">Vendas Hoje</h5>
+                  <p class="card-text display-4">R$ 5.230</p>
+                </div>
+                <div class="align-self-center">
+                  <i class="fas fa-shopping-cart fa-2x opacity-50"></i>
+                </div>
+              </div>
+              <div class="mt-2">
+                <small><i class="fas fa-arrow-up me-1"></i> 12% desde ontem</small>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card text-white bg-warning">
+            <div class="card-body">
+              <div class="d-flex justify-content-between">
+                <div>
+                  <h5 class="card-title">Pedidos Pendentes</h5>
+                  <p class="card-text display-4">14</p>
+                </div>
+                <div class="align-self-center">
+                  <i class="fas fa-clipboard-list fa-2x opacity-50"></i>
+                </div>
+              </div>
+              <div class="mt-2">
+                <small><i class="fas fa-arrow-down me-1"></i> 2 desde ontem</small>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card text-white bg-info">
+            <div class="card-body">
+              <div class="d-flex justify-content-between">
+                <div>
+                  <h5 class="card-title">Taxa de Conversão</h5>
+                  <p class="card-text display-4">4.7%</p>
+                </div>
+                <div class="align-self-center">
+                  <i class="fas fa-chart-pie fa-2x opacity-50"></i>
+                </div>
+              </div>
+              <div class="mt-2">
+                <small><i class="fas fa-arrow-up me-1"></i> 0.3% desde a semana passada</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Gráficos -->
+      <div class="row mb-5">
+        <div class="col-md-8">
+          <div class="card">
+            <div class="card-header bg-transparent">
+              <h5 class="card-title mb-0">Vendas Mensais</h5>
+            </div>
+            <div class="card-body">
+              <div class="chart-container">
+                <canvas id="salesChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-header bg-transparent">
+              <h5 class="card-title mb-0">Categorias de Produtos</h5>
+            </div>
+            <div class="card-body">
+              <div class="chart-container">
+                <canvas id="categoryChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Tabela de Atividades Recentes -->
       <div class="row">
-        <div class="col-md-4">
-          <div class="card text-white bg-primary mb-3">
-            <div class="card-body">
-              <h5 class="card-title">Clientes Ativos</h5>
-              <p class="card-text display-4">128</p>
+        <div class="col-12">
+          <div class="card">
+            <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
+              <h5 class="card-title mb-0">Atividades Recentes</h5>
+              <a href="#" class="btn btn-sm btn-outline-primary">Ver Tudo</a>
             </div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="card text-white bg-success mb-3">
-            <div class="card-body">
-              <h5 class="card-title">Vendas Hoje</h5>
-              <p class="card-text display-4">R$ 5.230</p>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="card text-white bg-warning mb-3">
-            <div class="card-body">
-              <h5 class="card-title">Pedidos Pendentes</h5>
-              <p class="card-text display-4">14</p>
+            <div class="card-body p-0">
+              <div class="table-container">
+                <table class="table table-hover mb-0">
+                  <thead class="table-light">
+                    <tr>
+                      <th>Cliente</th>
+                      <th>Produto</th>
+                      <th>Valor</th>
+                      <th>Status</th>
+                      <th>Data</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>João Silva</td>
+                      <td>Notebook Dell</td>
+                      <td>R$ 2.499,00</td>
+                      <td><span class="badge bg-success">Concluído</span></td>
+                      <td>12/05/2023</td>
+                    </tr>
+                    <tr>
+                      <td>Maria Santos</td>
+                      <td>Smartphone Samsung</td>
+                      <td>R$ 1.299,00</td>
+                      <td><span class="badge bg-warning">Pendente</span></td>
+                      <td>11/05/2023</td>
+                    </tr>
+                    <tr>
+                      <td>Carlos Oliveira</td>
+                      <td>Tablet Apple</td>
+                      <td>R$ 3.199,00</td>
+                      <td><span class="badge bg-success">Concluído</span></td>
+                      <td>10/05/2023</td>
+                    </tr>
+                    <tr>
+                      <td>Ana Costa</td>
+                      <td>Fones de Ouvido</td>
+                      <td>R$ 299,00</td>
+                      <td><span class="badge bg-danger">Cancelado</span></td>
+                      <td>09/05/2023</td>
+                    </tr>
+                    <tr>
+                      <td>Pedro Alves</td>
+                      <td>Monitor LG</td>
+                      <td>R$ 899,00</td>
+                      <td><span class="badge bg-success">Concluído</span></td>
+                      <td>08/05/2023</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
@@ -175,14 +511,106 @@
   </div>
 
   <!-- Scripts -->
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    $(document).ready(function () {
-      $('#sidebarCollapse').on('click', function () {
-        $('#sidebar').toggleClass('active');
-        $('#content').toggleClass('active');
+    document.addEventListener('DOMContentLoaded', function() {
+      // Toggle da sidebar
+      document.getElementById('sidebarCollapse').addEventListener('click', function() {
+        document.getElementById('sidebar').classList.toggle('active');
+        document.getElementById('content').classList.toggle('active');
+      });
+
+      // Toggle do tema
+      document.getElementById('themeToggle').addEventListener('click', function() {
+        const currentTheme = document.body.getAttribute('data-theme');
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+        document.body.setAttribute('data-theme', newTheme);
+        
+        // Atualizar ícone
+        const icon = this.querySelector('i');
+        if (newTheme === 'dark') {
+          icon.classList.remove('fa-moon');
+          icon.classList.add('fa-sun');
+        } else {
+          icon.classList.remove('fa-sun');
+          icon.classList.add('fa-moon');
+        }
+      });
+
+      // Gráfico de vendas
+      const salesCtx = document.getElementById('salesChart').getContext('2d');
+      const salesChart = new Chart(salesCtx, {
+        type: 'line',
+        data: {
+          labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+          datasets: [{
+            label: 'Vendas (R$)',
+            data: [12000, 19000, 15000, 25000, 22000, 30000, 28000, 26000, 31000, 35000, 40000, 45000],
+            borderColor: '#4361ee',
+            backgroundColor: 'rgba(67, 97, 238, 0.1)',
+            borderWidth: 2,
+            fill: true,
+            tension: 0.4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: {
+                color: 'rgba(0, 0, 0, 0.05)'
+              }
+            },
+            x: {
+              grid: {
+                display: false
+              }
+            }
+          }
+        }
+      });
+
+      // Gráfico de categorias
+      const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+      const categoryChart = new Chart(categoryCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Eletrônicos', 'Roupas', 'Casa', 'Livros', 'Esportes'],
+          datasets: [{
+            data: [35, 25, 20, 10, 10],
+            backgroundColor: [
+              '#4361ee',
+              '#3a0ca3',
+              '#7209b7',
+              '#f72585',
+              '#4cc9f0'
+            ],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom'
+            }
+          }
+        }
+      });
+
+      // Adicionar classe de animação aos cards
+      const cards = document.querySelectorAll('.card');
+      cards.forEach((card, index) => {
+        card.classList.add('fade-in');
+        card.style.animationDelay = `${index * 0.1}s`;
       });
     });
   </script>
